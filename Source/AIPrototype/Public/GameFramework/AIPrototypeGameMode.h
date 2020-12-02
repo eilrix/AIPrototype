@@ -19,14 +19,14 @@ public:
 	virtual void StartPlay() override;
 	
 public:
-	UPROPERTY(EditAnywhere, NoClear, BlueprintReadOnly, Category = "Classes")
+	UPROPERTY(EditDefaultsOnly, NoClear, BlueprintReadOnly, Category = "Classes")
 	TSubclassOf<AAIPlayerController> AI_player_controller_class;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "GameMode")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "GameMode")
 	int32 number_of_AI_players = 0;
 
-private:
-	void SpawnAIPlayers();
+protected:
+	virtual bool SpawnAIPlayers();
 };
 
 

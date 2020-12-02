@@ -20,6 +20,6 @@ public:
 	void AddAIPlayer(AAIPlayerController* AIPlayer);
 	
 private:
-	UPROPERTY()
+	UPROPERTY(Transient)
 	TArray<AAIPlayerController*> m_AIPlayers;
 };
