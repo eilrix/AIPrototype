@@ -17,7 +17,6 @@ class AIPROTOTYPE_API AUnitSpawner : public AActor
 	
 public:	
 	AUnitSpawner();
-	virtual void Tick(float DeltaTime) override;
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Settings")
@@ -34,12 +33,8 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
-
-	virtual void SpawnUnitGroup();
+	void SpawnCommander(FActorSpawnParameters& SpawnParameters);
 	bool SpawnUnits();
-	bool SpawnUnitGroupAIController();
-	FVector GetUnitGroupCenterLocation() const;
-	void LogGroupAIControllerLocation();
 
 protected:
 	UPROPERTY(Transient)
