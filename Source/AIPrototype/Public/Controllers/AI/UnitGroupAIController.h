@@ -7,6 +7,9 @@
 #include "UnitGroupAIController.generated.h"
 
 class AUnitBase;
+class AUnitGroupAIController;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnGroupMovementFinished, AUnitGroupAIController*, UnitGroupAIController);
 
 /**
  * 
@@ -18,13 +21,15 @@ class AIPROTOTYPE_API AUnitGroupAIController : public AUnitAIController
 
 public:
 	UFUNCTION(BlueprintCallable)
-	void MoveGroupToLocation(const FVector& Location);
-
+	void MoveGroupToLocation(const FVector& Location, float AcceptanceRadius);
 	void InitializeControlledUnits(const TArray<AUnitBase*>& Units);
 
 public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Settings")
 	UBehaviorTree* BehaviorTreeAsset;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnGroupMovementFinished OnGroupMovementFinished;
 
 protected:
 	virtual void BeginPlay() override;

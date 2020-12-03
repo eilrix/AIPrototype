@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Controllers/AI/UnitGroupAIController.h"
-
+#include "DelegateHelpers.h"
 #include "Controllers/AI/UnitAIController.h"
 #include "Units/UnitBase.h"
 
@@ -20,7 +20,7 @@ void AUnitGroupAIController::BeginPlay()
 	RunBehaviorTree(BehaviorTreeAsset);
 }
 
-void AUnitGroupAIController::MoveGroupToLocation(const FVector& Location)
+void AUnitGroupAIController::MoveGroupToLocation(const FVector& Location, const float AcceptanceRadius)
 {
 	for (const auto unit_weak_ptr : m_ControlledUnits)
 	{
@@ -33,5 +33,9 @@ void AUnitGroupAIController::MoveGroupToLocation(const FVector& Location)
 			}
 		}
 	}
+
+	auto pathFollowingComponent = GetPathFollowingComponent();
+	pathFollowingComponent->SetAcceptanceRadius(AcceptanceRadius);
+	Chain(this, pathFollowingComponent->OnRequestFinished, OnGroupMovementFinished, this);
 }
 
