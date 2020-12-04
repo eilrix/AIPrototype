@@ -1,13 +1,14 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Controllers/AI/UnitGroupAIController.h"
+
+#include "CommanderBlackboardDataKeys.h"
 #include "DelegateHelpers.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Controllers/AI/UnitAIController.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "Perception/AISense_Sight.h"
 #include "Units/UnitBase.h"
-#include "AIPrototype/AIPrototype.h"
 
 AUnitGroupAIController::AUnitGroupAIController()
 {
@@ -21,14 +22,21 @@ void AUnitGroupAIController::InitializeControlledUnits(const TArray<AUnitBase*>&
 	{
 		m_ControlledUnits.AddUnique(unit);
 	}
+
+	InitBlackboardAlliesNum();
+}
+
+void AUnitGroupAIController::InitBlackboardAlliesNum()
+{
+	GetBlackboardComponent()->SetValueAsInt(CBBKeys::AlliesNum, m_ControlledUnits.Num());
 }
 
 void AUnitGroupAIController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	RunBehaviorTree(BehaviorTreeAsset);
 	SubscribeOnPerceptionUpdates();
+	RunBehaviorTree(BehaviorTreeAsset);
 }
 
 void AUnitGroupAIController::SubscribeOnPerceptionUpdates()
@@ -52,6 +60,13 @@ void AUnitGroupAIController::OnTargetPerceptionUpdated(AActor* Actor, FAIStimulu
 			m_SensedEnemies.Remove(Actor);
 		}
 	}
+
+	UpdateBlackboardEnemiesNum();
+}
+
+void AUnitGroupAIController::UpdateBlackboardEnemiesNum()
+{
+	GetBlackboardComponent()->SetValueAsInt(CBBKeys::EnemiesNum, m_SensedEnemies.Num());
 }
 
 void AUnitGroupAIController::MoveGroupToLocation(const FVector& Location, const float AcceptanceRadius)

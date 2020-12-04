@@ -37,6 +37,9 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	void SubscribeOnPerceptionUpdates();
+
+	void InitBlackboardAlliesNum();
+	void UpdateBlackboardEnemiesNum();
 	
 private:
 	UFUNCTION()

@@ -76,7 +76,7 @@ void AUnitSpawner::SpawnCommander(FActorSpawnParameters& SpawnParameters)
 	commander->AIControllerClass = unit_group_AI_controller_class;
 	SetUnitTeamID(commander);
 	UGameplayStatics::FinishSpawningActor(commander, FTransform(GetActorLocation()));
-	
-	m_SpawnedUnits.Add(commander);
+
+	m_SpawnedUnits.Add(commander); // must add before initialize AIC controlled units
 	Cast<AUnitGroupAIController>(commander->GetController())->InitializeControlledUnits(m_SpawnedUnits); // cast always valid in that context, no need to check
 }
