@@ -28,7 +28,7 @@ protected:
 protected:
 	UPROPERTY(Transient)
 	AUnitSpawner* m_UnitSpawner;
-
+	
 	TWeakObjectPtr<AController> m_OwningController;
 
 private:

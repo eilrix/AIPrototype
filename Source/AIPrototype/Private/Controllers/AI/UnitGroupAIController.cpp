@@ -2,8 +2,18 @@
 
 #include "Controllers/AI/UnitGroupAIController.h"
 #include "DelegateHelpers.h"
+#include "BehaviorTree/BlackboardComponent.h"
 #include "Controllers/AI/UnitAIController.h"
+#include "Perception/AIPerceptionComponent.h"
+#include "Perception/AISense_Sight.h"
 #include "Units/UnitBase.h"
+#include "AIPrototype/AIPrototype.h"
+
+AUnitGroupAIController::AUnitGroupAIController()
+{
+	PerceptionComponent = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("PerceptionComponent"));
+	PerceptionComponent->SetDominantSense(UAISense_Sight::StaticClass());
+}
 
 void AUnitGroupAIController::InitializeControlledUnits(const TArray<AUnitBase*>& Units)
 {
@@ -18,6 +28,30 @@ void AUnitGroupAIController::BeginPlay()
 	Super::BeginPlay();
 
 	RunBehaviorTree(BehaviorTreeAsset);
+	SubscribeOnPerceptionUpdates();
+}
+
+void AUnitGroupAIController::SubscribeOnPerceptionUpdates()
+{
+	PerceptionComponent->OnTargetPerceptionUpdated.AddDynamic(this, &AUnitGroupAIController::OnTargetPerceptionUpdated);
+}
+
+void AUnitGroupAIController::OnTargetPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus)
+{
+	if (Stimulus.IsActive())
+	{
+		if (!m_SensedEnemies.Contains(Actor))
+		{
+			m_SensedEnemies.AddUnique(Actor);
+		}
+	}
+	else if (Stimulus.IsExpired())
+	{
+		if (m_SensedEnemies.Contains(Actor))
+		{
+			m_SensedEnemies.Remove(Actor);
+		}
+	}
 }
 
 void AUnitGroupAIController::MoveGroupToLocation(const FVector& Location, const float AcceptanceRadius)

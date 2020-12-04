@@ -10,3 +10,13 @@ AUnitBase::AUnitBase()
 	AIControllerClass = AUnitAIController::StaticClass();
 }
 
+void AUnitBase::SetGenericTeamId(const FGenericTeamId& TeamID)
+{
+	m_OwnerTeamID = TeamID;
+}
+
+FGenericTeamId AUnitBase::GetGenericTeamId() const
+{
+	return m_OwnerTeamID;
+}
+

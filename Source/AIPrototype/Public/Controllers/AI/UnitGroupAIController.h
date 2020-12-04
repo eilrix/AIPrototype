@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "UnitAIController.h"
+#include "Perception/AIPerceptionTypes.h"
 #include "UnitGroupAIController.generated.h"
 
 class AUnitBase;
@@ -20,6 +21,8 @@ class AIPROTOTYPE_API AUnitGroupAIController : public AUnitAIController
 	GENERATED_BODY()
 
 public:
+	AUnitGroupAIController();
+	
 	UFUNCTION(BlueprintCallable)
 	void MoveGroupToLocation(const FVector& Location, float AcceptanceRadius);
 	void InitializeControlledUnits(const TArray<AUnitBase*>& Units);
@@ -33,8 +36,14 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
-
+	void SubscribeOnPerceptionUpdates();
+	
+private:
+	UFUNCTION()
+	void OnTargetPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus);
+	
 private:
 	// Controlled units, including self
-	TArray<TWeakObjectPtr<AUnitBase>> m_ControlledUnits;
+	TArray<TWeakObjectPtr<AUnitBase>> m_ControlledUnits; 
+	TArray<AActor*> m_SensedEnemies;
 };

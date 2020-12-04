@@ -13,5 +13,5 @@ UCLASS()
 class AIPROTOTYPE_API AAIPlayerController : public AAIController
 {
 	GENERATED_BODY()
-	
+
 };

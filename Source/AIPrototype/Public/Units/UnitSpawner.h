@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GenericTeamAgentInterface.h"
 #include "Engine/World.h"
 #include "GameFramework/Actor.h"
 #include "UnitSpawner.generated.h"
@@ -17,7 +18,8 @@ class AIPROTOTYPE_API AUnitSpawner : public AActor
 	
 public:	
 	AUnitSpawner();
-
+	void InitOwningPlayerTeamID(const FGenericTeamId& TeamID);
+	
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Settings")
 	TSubclassOf<AUnitBase> unit_class;
@@ -35,6 +37,7 @@ protected:
 	virtual void BeginPlay() override;
 	void SpawnCommander(FActorSpawnParameters& SpawnParameters);
 	bool SpawnUnits();
+	void SetUnitTeamID(AUnitBase* Unit);
 
 protected:
 	UPROPERTY(Transient)
@@ -42,5 +45,7 @@ protected:
 
 	UPROPERTY(Transient)
 	AUnitGroupAIController* m_UnitGroupAIController;
+
+	FGenericTeamId m_OwningPlayerTeamID;
 
 };
