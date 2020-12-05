@@ -27,6 +27,8 @@ public:
 	void MoveGroupToLocation(const FVector& Location, float AcceptanceRadius);
 	void InitializeControlledUnits(const TArray<AUnitBase*>& Units);
 
+	virtual void Tick(float DeltaSeconds) override;
+	
 public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Settings")
 	UBehaviorTree* BehaviorTreeAsset;
@@ -37,6 +39,7 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	void SubscribeOnPerceptionUpdates();
+	void UpdateBBEnemyGroupCenterLocation();
 
 	void InitBlackboardAlliesNum();
 	void UpdateBlackboardEnemiesNum();
@@ -44,6 +47,8 @@ protected:
 private:
 	UFUNCTION()
 	void OnTargetPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus);
+
+	FVector CalcEnemyGroupCenterLocation() const;
 	
 private:
 	// Controlled units, including self
