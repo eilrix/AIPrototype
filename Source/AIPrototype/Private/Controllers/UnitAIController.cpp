@@ -1,8 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "Controllers/AI/UnitAIController.h"
+#include "Controllers/UnitAIController.h"
 #include "Blueprint/AIBlueprintHelperLibrary.h"
-#include "AIPrototype/AIPrototype.h"
+#include "AIPrototype/Public/AIPrototype.h"
 
 void AUnitAIController::SetGenericTeamId(const FGenericTeamId& NewTeamID)
 {

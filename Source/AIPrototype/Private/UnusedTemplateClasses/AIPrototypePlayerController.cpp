@@ -1,10 +1,10 @@
 // Copyright 1998-2019 Epic Games, Inc. All Rights Reserved.
 
-#include "AIPrototypePlayerController.h"
+#include "UnusedTemplateClasses/AIPrototypePlayerController.h"
 #include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "Runtime/Engine/Classes/Components/DecalComponent.h"
 #include "HeadMountedDisplayFunctionLibrary.h"
-#include "AIPrototypeCharacter.h"
+#include "UnusedTemplateClasses/AIPrototypeCharacter.h"
 #include "Engine/World.h"
 
 AAIPrototypePlayerController::AAIPrototypePlayerController()

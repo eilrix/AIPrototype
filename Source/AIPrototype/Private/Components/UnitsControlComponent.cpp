@@ -4,7 +4,7 @@
 #include "Engine/World.h"
 #include "GameFramework/Controller.h"
 #include "Units/UnitSpawner.h"
-#include "AIPrototype/AIPrototype.h"
+#include "AIPrototype/Public/AIPrototype.h"
 #include "Kismet/GameplayStatics.h"
 
 UUnitsControlComponent::UUnitsControlComponent()

@@ -1,8 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Units/UnitSpawner.h"
-#include "AIPrototype/AIPrototype.h"
-#include "Controllers/AI/UnitGroupAIController.h"
+#include "AIPrototype/Public/AIPrototype.h"
+#include "Controllers/UnitGroupAIController.h"
 #include "Editor/GroupActor.h"
 #include "VisualLogger/VisualLogger.h"
 #include "Engine/World.h"

@@ -1,11 +1,11 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "Controllers/AI/UnitGroupAIController.h"
-#include "CommanderBlackboardDataKeys.h"
-#include "DelegateHelpers.h"
-#include "AIPrototype/AIPrototype.h"
+#include "Controllers/UnitGroupAIController.h"
+#include "Misc/CommanderBlackboardDataKeys.h"
+#include "Misc/DelegateHelpers.h"
+#include "AIPrototype/Public/AIPrototype.h"
 #include "BehaviorTree/BlackboardComponent.h"
-#include "Controllers/AI/UnitAIController.h"
+#include "Controllers/UnitAIController.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "Perception/AISense_Sight.h"
 #include "Units/UnitBase.h"
