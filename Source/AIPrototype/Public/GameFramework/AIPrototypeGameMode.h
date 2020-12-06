@@ -17,6 +17,7 @@ class AAIPrototypeGameMode : public AGameMode
 public:
 	AAIPrototypeGameMode();
 	virtual void StartPlay() override;
+	virtual AActor* ChoosePlayerStart_Implementation(AController* Player) override;
 	
 public:
 	UPROPERTY(EditDefaultsOnly, NoClear, BlueprintReadOnly, Category = "Classes")
