@@ -50,17 +50,17 @@ bool AUnitSpawner::SpawnUnits()
 	spawn_parameters.bDeferConstruction = true;
 	
 	AUnitBase* spawned_unit = nullptr;
-	for (int32 units_spawned = 0; units_spawned < num_units_to_spawn - 1; ++units_spawned) // last unit of the group will be commander
+	for (int32 units_spawned = 0; units_spawned < num_units_to_spawn - 1; ++units_spawned) // -1 cause last unit of the group will be commander
 	{
 		spawned_unit = GetWorld()->SpawnActor<AUnitBase>(unit_class, spawn_parameters);
 		SetUnitTeamID(spawned_unit);
 		UGameplayStatics::FinishSpawningActor(spawned_unit, FTransform(GetActorRotation(), GetActorLocation()));
-		m_SpawnedUnits.Add(spawned_unit); // TODO location random deviation for less collisions?
+		m_SpawnedUnits.Add(spawned_unit);
 	}
 
 	SpawnCommander(spawn_parameters);
 	
-	return true; // @TODO check if units are valid? don't crash
+	return true; // @TODO check if all units spawned correctly?
 }
 
 void AUnitSpawner::SetUnitTeamID(AUnitBase* Unit)
@@ -73,10 +73,10 @@ void AUnitSpawner::SetUnitTeamID(AUnitBase* Unit)
 void AUnitSpawner::SpawnCommander(FActorSpawnParameters& SpawnParameters)
 {
 	auto commander = GetWorld()->SpawnActor<AUnitBase>(unit_class, SpawnParameters);
-	commander->AIControllerClass = unit_group_AI_controller_class;
+	commander->AIControllerClass = unit_group_AI_controller_class; // so commander will posses its pawn using proper AI controller class
 	SetUnitTeamID(commander);
 	UGameplayStatics::FinishSpawningActor(commander, FTransform(GetActorLocation()));
 
 	m_SpawnedUnits.Add(commander); // be sure to add before initialize AIC controlled units
-	Cast<AUnitGroupAIController>(commander->GetController())->InitializeControlledUnits(m_SpawnedUnits); // cast always valid in that context, no need to check
+	Cast<AUnitGroupAIController>(commander->GetController())->InitializeControlledUnits(m_SpawnedUnits); // cast always valid in that context
 }

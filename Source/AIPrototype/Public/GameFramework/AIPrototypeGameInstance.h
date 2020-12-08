@@ -8,9 +8,6 @@
 
 class AAIPlayerController;
 
-/**
- * 
- */
 UCLASS()
 class AIPROTOTYPE_API UAIPrototypeGameInstance : public UGameInstance
 {
@@ -19,7 +16,7 @@ class AIPROTOTYPE_API UAIPrototypeGameInstance : public UGameInstance
 public:
 	void AddAIPlayer(AAIPlayerController* AIPlayer);
 	
-private:
+protected:
 	UPROPERTY(Transient)
 	TArray<AAIPlayerController*> m_AIPlayers;
 };

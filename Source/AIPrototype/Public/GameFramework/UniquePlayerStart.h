@@ -7,7 +7,7 @@
 #include "UniquePlayerStart.generated.h"
 
 /**
- * 
+ * @brief PlayerStart for one, unique player. If UniquePlayerStart is occupied by some player, other players can't use it as their start spot.
  */
 UCLASS()
 class AIPROTOTYPE_API AUniquePlayerStart : public APlayerStart
@@ -18,6 +18,6 @@ public:
 	bool IsOccupied() const;
 	void SetIsOccupied(bool bReserved);
 	
-private:
+protected:
 	bool m_bOccupied = false;
 };

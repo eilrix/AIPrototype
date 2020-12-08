@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -9,6 +7,10 @@
 class AUnitSpawner;
 class AController;
 
+/*
+ * @brief Component that is responsible for everything related to units ownership and spawning.
+ * @details Should be owned by unique human or AI player controller .
+ */
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class AIPROTOTYPE_API UUnitsControlComponent : public UActorComponent
 {
@@ -18,6 +20,7 @@ public:
 	UUnitsControlComponent();
 
 public:
+	/* Unit spawner class that will be used to create spawner associated with component's owner on BeginPlay. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Settings")
 	TSubclassOf<AUnitSpawner> unit_spawner_class;
 
@@ -28,7 +31,6 @@ protected:
 protected:
 	UPROPERTY(Transient)
 	AUnitSpawner* m_UnitSpawner;
-	
 	TWeakObjectPtr<AController> m_OwningController;
 
 private:

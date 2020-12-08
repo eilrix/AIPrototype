@@ -1,9 +1,9 @@
 #pragma once
 #include "UObject/NameTypes.h"
 
-namespace CBBKeys
+namespace CommanderBBKeys
 {
 	static FName AlliesNum = TEXT("AlliesNum");
 	static FName EnemiesNum = TEXT("EnemiesNum");
-	static FName EnemyGroupCenterLocation = TEXT("EnemyGroupCenterLocation");
+	static FName EnemyLocation = TEXT("EnemyLocation");
 }

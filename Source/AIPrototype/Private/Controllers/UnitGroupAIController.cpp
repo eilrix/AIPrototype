@@ -1,7 +1,5 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #include "Controllers/UnitGroupAIController.h"
-#include "Misc/CommanderBlackboardDataKeys.h"
+#include "Misc/CommanderBlackboardKeys.h"
 #include "Misc/DelegateHelpers.h"
 #include "AIPrototype/Public/AIPrototype.h"
 #include "BehaviorTree/BlackboardComponent.h"
@@ -27,29 +25,26 @@ void AUnitGroupAIController::InitializeControlledUnits(const TArray<AUnitBase*>&
 	InitBlackboardAlliesNum();
 }
 
-void AUnitGroupAIController::Tick(float DeltaSeconds)
-{
-	Super::Tick(DeltaSeconds);
-
-	UpdateBBEnemyGroupCenterLocation();
-}
-
 void AUnitGroupAIController::InitBlackboardAlliesNum()
 {
-	GetBlackboardComponent()->SetValueAsInt(CBBKeys::AlliesNum, m_ControlledUnits.Num());
+	GetBlackboardComponent()->SetValueAsInt(CommanderBBKeys::AlliesNum, m_ControlledUnits.Num());
 }
 
 void AUnitGroupAIController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	SubscribeOnPerceptionUpdates();
+	BindDelegates();
 	RunBehaviorTree(BehaviorTreeAsset);
 }
 
-void AUnitGroupAIController::SubscribeOnPerceptionUpdates()
+void AUnitGroupAIController::BindDelegates()
 {
 	PerceptionComponent->OnTargetPerceptionUpdated.AddDynamic(this, &AUnitGroupAIController::OnTargetPerceptionUpdated);
+
+	// consider group movement finished when commander reaches goal location
+	Chain(this, GetPathFollowingComponent()->OnRequestFinished, OnGroupMovementFinishedDelegate, this);
+	OnGroupMovementFinishedDelegate.AddDynamic(this, &AUnitGroupAIController::OnGroupMovementFinished);
 }
 
 void AUnitGroupAIController::OnTargetPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus)
@@ -72,42 +67,50 @@ void AUnitGroupAIController::OnTargetPerceptionUpdated(AActor* Actor, FAIStimulu
 	UpdateBlackboardEnemiesNum();
 }
 
-void AUnitGroupAIController::UpdateBBEnemyGroupCenterLocation()
-{
-	if (m_SensedEnemies.Num() > 0)
-	{
-		GetBlackboardComponent()->SetValueAsVector(CBBKeys::EnemyGroupCenterLocation, CalcEnemyGroupCenterLocation());
-	}
-	else
-	{
-		GetBlackboardComponent()->ClearValue(CBBKeys::EnemyGroupCenterLocation);
-	}
-}
 
 void AUnitGroupAIController::UpdateBlackboardEnemiesNum()
 {
-	GetBlackboardComponent()->SetValueAsInt(CBBKeys::EnemiesNum, m_SensedEnemies.Num());
+	GetBlackboardComponent()->SetValueAsInt(CommanderBBKeys::EnemiesNum, m_SensedEnemies.Num());
 }
 
-FVector AUnitGroupAIController::CalcEnemyGroupCenterLocation() const
+void AUnitGroupAIController::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	UpdateBlackboardEnemyLocation();
+}
+
+void AUnitGroupAIController::UpdateBlackboardEnemyLocation()
+{
+	if (m_SensedEnemies.Num() > 0)
+	{
+		GetBlackboardComponent()->SetValueAsVector(CommanderBBKeys::EnemyLocation, CalcSensedEnemiesCenterLocation());
+	}
+	else
+	{
+		GetBlackboardComponent()->ClearValue(CommanderBBKeys::EnemyLocation);
+	}
+}
+
+FVector AUnitGroupAIController::CalcSensedEnemiesCenterLocation() const
 {
 	FVector min_location = FVector(BIG_NUMBER);
 	FVector max_location = FVector(-BIG_NUMBER);
-	FVector unit_location = FVector::ZeroVector;
+	FVector enemy_location = FVector::ZeroVector;
 
-	for (const auto unit : m_SensedEnemies)
+	for (const auto enemy_unit : m_SensedEnemies)
 	{
-		if (unit->IsValidLowLevelFast())
+		if (enemy_unit.IsValid())
 		{
-			unit_location = unit->GetActorLocation();
+			enemy_location = enemy_unit->GetActorLocation();
 
-			min_location.X = FMath::Min<float>(unit_location.X, min_location.X);
-			min_location.Y = FMath::Min<float>(unit_location.Y, min_location.Y);
-			min_location.Z = FMath::Min<float>(unit_location.Z, min_location.Z);
+			min_location.X = FMath::Min<float>(enemy_location.X, min_location.X);
+			min_location.Y = FMath::Min<float>(enemy_location.Y, min_location.Y);
+			min_location.Z = FMath::Min<float>(enemy_location.Z, min_location.Z);
 
-			max_location.X = FMath::Max<float>(unit_location.X, max_location.X);
-			max_location.Y = FMath::Max<float>(unit_location.Y, max_location.Y);
-			max_location.Z = FMath::Max<float>(unit_location.Z, max_location.Z);
+			max_location.X = FMath::Max<float>(enemy_location.X, max_location.X);
+			max_location.Y = FMath::Max<float>(enemy_location.Y, max_location.Y);
+			max_location.Z = FMath::Max<float>(enemy_location.Z, max_location.Z);
 		}
 	}
 
@@ -122,20 +125,28 @@ FVector AUnitGroupAIController::CalcEnemyGroupCenterLocation() const
 
 void AUnitGroupAIController::MoveGroupToLocation(const FVector& Location, const float AcceptanceRadius)
 {
-	for (const auto unit_weak_ptr : m_ControlledUnits)
+	const auto pathFollowingComponent = GetPathFollowingComponent();
+	m_OriginalAcceptanceRaidus = pathFollowingComponent->GetAcceptanceRadius();
+	pathFollowingComponent->SetAcceptanceRadius(AcceptanceRadius);
+	
+	for (const auto unit : m_ControlledUnits)
 	{
-		if (const auto unit = unit_weak_ptr.Get())
+		if (unit.IsValid())
 		{
 			const auto unit_ai_controller = Cast<AUnitAIController>(unit->GetController());
 			if (unit_ai_controller != nullptr)
 			{
 				unit_ai_controller->MoveToLocation(Location);
 			}
+			else
+			{
+				UE_LOG(LogAIPrototype, Warning, TEXT("%hs: unit '%s' isn't controlled by AUnitAIController, can't move it."), __FUNCTION__, *unit->GetName())
+			}
 		}
 	}
-
-	auto pathFollowingComponent = GetPathFollowingComponent();
-	pathFollowingComponent->SetAcceptanceRadius(AcceptanceRadius);
-	Chain(this, pathFollowingComponent->OnRequestFinished, OnGroupMovementFinished, this);
 }
 
+void AUnitGroupAIController::OnGroupMovementFinished(AUnitGroupAIController* UnitGroupAIController)
+{
+	GetPathFollowingComponent()->SetAcceptanceRadius(m_OriginalAcceptanceRaidus);
+}

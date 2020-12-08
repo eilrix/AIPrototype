@@ -47,10 +47,10 @@ bool AAIPrototypeGameMode::SpawnAIPlayers()
 	spawn_parameters.bDeferConstruction = true;
 
 	AAIPlayerController* AI_player = nullptr;
-	AActor* AI_player_start_actor = nullptr;
+	AActor* AI_player_start = nullptr;
 	IGenericTeamAgentInterface* player_team_agent_interface = nullptr;
 
-	// I just give away team ID's locally here. Proper team ID logic, considering human and AI players, and teams, would take a while to implement. So using that approach for simplicity.
+	// I just give away team ID's locally here for simplicity. Proper logic for team ID assignment, considering human and AI players, and teams, would take a while to implement.
 	uint8 player_team_ID = 1; 
 	
 	for (int32 num_ai_players_spawned = 0; num_ai_players_spawned < number_of_AI_players; ++num_ai_players_spawned)
@@ -58,18 +58,18 @@ bool AAIPrototypeGameMode::SpawnAIPlayers()
 		AI_player = GetWorld()->SpawnActor<AAIPlayerController>(AI_player_controller_class, spawn_parameters);
 		checkf(AI_player != nullptr, TEXT("%hs: failed to spawn AI Player of class %s, this should never happen."), __FUNCTION__, *AI_player_controller_class->GetName());
 		
-		AI_player_start_actor = FindPlayerStart(AI_player);
-		checkf(AI_player_start_actor != nullptr, TEXT("%hs: failed to find any player start actor, this should never happen."), __FUNCTION__);
+		AI_player_start = FindPlayerStart(AI_player);
+		checkf(AI_player_start != nullptr, TEXT("%hs: failed to find any player start, this should never happen."), __FUNCTION__);
 
-		AI_player->StartSpot = AI_player_start_actor;
+		AI_player->StartSpot = AI_player_start;
 
 		// init AI player team ID
 		player_team_agent_interface = Cast<IGenericTeamAgentInterface>(AI_player);
 		checkf(player_team_agent_interface != nullptr, 
-			TEXT("%hs: create AI player doesn't implement IGenericTeamAgentInterfac, but it absolutely have to. You have provided improper AI_player_controller_class."), __FUNCTION__);
+			TEXT("%hs: created AI player doesn't implement IGenericTeamAgentInterfac but it absolutely have to. Most probably you provided improper AI_player_controller_class."), __FUNCTION__);
 		player_team_agent_interface->SetGenericTeamId(player_team_ID);
 
-		UGameplayStatics::FinishSpawningActor(AI_player, FTransform(AI_player_start_actor->GetActorRotation(), AI_player_start_actor->GetActorLocation()));
+		UGameplayStatics::FinishSpawningActor(AI_player, FTransform(AI_player_start->GetActorRotation(), AI_player_start->GetActorLocation()));
 
 		// register AI player creation
 		game_instance->AddAIPlayer(AI_player);
@@ -119,7 +119,7 @@ AActor* AAIPrototypeGameMode::ChoosePlayerStart_Implementation(AController* Play
 	if (selected_player_start == nullptr)
 	{
 		UE_LOG(LogAIPrototype, Error,
-			TEXT("%hs: failed to select valid player start. It's either no regular player start for human players or not enough unique player stars for desired number of AI players. Default player start selection logic will be used."),
+			TEXT("%hs: failed to select valid player start. It's either no regular player start for human player or not enough unique player stars for desired number of AI players. Default player start selection logic will be used."),
 			__FUNCTION__);
 		selected_player_start = Super::ChoosePlayerStart_Implementation(Player);
 	}

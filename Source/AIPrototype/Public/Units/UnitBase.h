@@ -7,6 +7,9 @@
 #include "GameFramework/Character.h"
 #include "UnitBase.generated.h"
 
+/*
+ * @brief Base abstract class for any unit in the game. 
+ */
 UCLASS(Abstract)
 class AIPROTOTYPE_API AUnitBase : public ACharacter, public IGenericTeamAgentInterface
 {
@@ -18,6 +21,6 @@ public:
 	virtual void SetGenericTeamId(const FGenericTeamId& TeamID) override;
 	virtual FGenericTeamId GetGenericTeamId() const override;
 
-private:
+protected:
 	FGenericTeamId m_OwnerTeamID;
 };
