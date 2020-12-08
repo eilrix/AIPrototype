@@ -21,14 +21,13 @@ void AUnitAIController::SetGenericTeamId(const FGenericTeamId& NewTeamID)
 FGenericTeamId AUnitAIController::GetGenericTeamId() const
 {
 	const auto controlledPawn = GetPawn();
-	if (controlledPawn->IsValidLowLevelFast())
+	if (controlledPawn != nullptr)
 	{
 		const auto pawn_team_agent_interface = Cast<IGenericTeamAgentInterface>(GetPawn());
 		checkf(pawn_team_agent_interface != nullptr, TEXT("%hs: controlled pawn doesn't implement IGenericTeamAgentInterface. Every unit in the game must implement the interface to properly handle units ownership."), __FUNCTION__);
 		return pawn_team_agent_interface->GetGenericTeamId();
 	}
 
-	UE_LOG(LogAIPrototype, Error, TEXT("%hs: doesn't control any valid pawn at the moment, operation failed."), __FUNCTION__);
 	return FGenericTeamId::NoTeam;
 }
 
